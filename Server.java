@@ -40,7 +40,7 @@ public class Server {
         // Run the server and wait for a client to connect
         try {
             // Set up the server on the specified port
-            serverSocket = new ServerSocket(port, 50, InetAddress.getByName("0.0.0.0"));
+            serverSocket = new ServerSocket(port);
             System.out.printf("Server started on port %d\n", port);
             
             // Indicate that the server is waiting for a client connection
