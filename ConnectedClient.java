@@ -1,4 +1,6 @@
 import java.net.*;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.io.*;
 
 /**
@@ -17,7 +19,10 @@ public class ConnectedClient {
     DataInputStream in; // Input stream to read data from the client
     DataOutputStream out; // Output stream to send response to the client
     int id; // Unique identifier for the client
-    Infix expr; // Infix object for evaluating mathematical expression
+    LocalDateTime startTime; // Start time of client connection
+    LocalDateTime endTime; // End time of client connection
+    List<String> requestLogs; // Logs from the client to the server
+    String name; // Client name
 
     /**
      * ConnectedClient(Socket socket, int id)
@@ -28,14 +33,16 @@ public class ConnectedClient {
      * @param socket The socket coonection for the client
      * @param id The unique client identifier
      */
-    public ConnectedClient(Socket socket, int id) {
+    public ConnectedClient(Socket socket, int id, String name) {
         this.clientSocket = socket;
         this.id = id;
-        expr = new Infix(); 
+        this.name = name;
+        requestLogs = new ArrayList<>();
+        startTime = LocalDateTime.now();
 
         try {
             // Log the connection of the client
-            System.out.printf("Client %d has connected\n", id);
+            System.out.printf("Client [%s]-%d has connected\n", name, id);
 
             // Set up the I/O streams
             in = new DataInputStream(
@@ -61,7 +68,7 @@ public class ConnectedClient {
         try {
             return in.readUTF();
         } catch(IOException i) {
-            System.err.println(i);
+            System.err.println("ERROR: " + i);
             return "";
         }
     }
@@ -73,7 +80,7 @@ public class ConnectedClient {
      * 
      * @param result The result to send back to the client
      */
-    public void sendRespone(double result) {
+    public void sendResponse(double result) {
         try {
             out.writeUTF(String.valueOf(result));
         } catch(IOException i) {
@@ -92,6 +99,7 @@ public class ConnectedClient {
      */
     public void close() {
         try {
+            System.out.printf("Client [%s]-%d has disconnected\n", name, id);
             clientSocket.close();
             in.close();
         } catch(IOException i) {
@@ -101,11 +109,73 @@ public class ConnectedClient {
     }
 
     /**
+     * getName()
+     * 
+     * @return The client's name
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
      * getId()
      * 
      * @return The client's id connected to the server
      */
     public int getId() {
         return id;
+    }
+
+    /**
+     * getStartTime()
+     * 
+     * @return The start time when the client connects to the server
+     */
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    /**
+     * getDisconnectTime()
+     * 
+     * @return The end time when the client disconnects to the server
+     */
+    public LocalDateTime getDisconnectTime() {
+        return endTime;
+    }
+
+    /**
+     * setDisconnectTime(LocalDateTime disconnectTime)
+     * 
+     * Set the date and time when the client disconnects from
+     * the server.
+     * 
+     * @param disconnectTime The date-time when the client disconnects
+     */
+    public void setDisconnectTime(LocalDateTime disconnectTime) {
+        endTime = disconnectTime;
+    }
+
+    /**
+     * logRequest(String eq, double result)
+     * 
+     * Logs every requests sent from the client
+     * to the server
+     * 
+     * @param eq String mathematical input
+     * @param result The evaluated result of the equation
+     */
+    public void logRequest(String eq, double result) {
+        String res = String.format("Equation: %s | Result: %.3f", eq, result);
+        requestLogs.add(res);
+    }
+
+    /**
+     * getRequestLog()
+     * 
+     * @return A list of requests that the client sent to the server
+     */
+    public List<String> getRequestLog() {
+        return requestLogs;
     }
 }

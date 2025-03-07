@@ -24,28 +24,27 @@ public class Infix {
     /**
      * evaluate(String expr)
      * 
-     * @param expr Mathematical expression
-     * @return The calculated value of expr
+     * @param expr The infix expression
+     * @return The evaluated result of the expression
      */
     double evaluate(String expr) {
-        String[] split = expr.split(" ");
-        for(int i = 0; i < split.length; i++) {
-            char c = split[i].charAt(0);
-            if(Character.isDigit(c)) {
-                double x = Double.parseDouble(split[i]);
-                operand.push(x);
-            } else if(c == '(') {
-                operator.push(c);
-            } else if(c == ')') {
-                while(operator.peek() != '(') {
+        List<String> tokens = parseExpression(expr);
+
+        for(String token : tokens) {
+            if(isOperand(token)) {
+                operand.push(Double.parseDouble(token));
+            } else if(token.equals("(")) {
+                operator.push('(');
+            } else if(token.equals(")")) {
+                while(!operator.isEmpty() && operator.peek() != '(') {
                     operate();
                 }
                 operator.pop();
-            } else if(isOperator(c)) {
-                while(!operator.isEmpty() && precedence(c) <= precedence(operator.peek())) {
+            } else if(isOperator(token.charAt(0))) {
+                while(!operator.isEmpty() && precedence(token.charAt(0)) <= precedence(operator.peek())) {
                     operate();
                 }
-                operator.push(c);
+                operator.push(token.charAt(0));
             }
         }
 
@@ -64,6 +63,16 @@ public class Infix {
      */
     boolean isOperator(char c) {
         return c == '*' || c == '/' || c == '+' || c == '-' || c == '^';
+    }
+
+    /**
+     * isOperand(String op)
+     * 
+     * @param op Operand
+     * @return True if op is a valid operand
+     */
+    boolean isOperand(String op) {
+        return op.matches("^[+-]?([0-9]+([.][0-9]+)?|[.][0-9]+)$");
     }
 
     /**
@@ -119,5 +128,96 @@ public class Infix {
                 break;
         }
         operand.push(res);
+    }
+
+    /**
+     * parseExpression(String expr)
+     * 
+     * @param expr Infix expression
+     * @return Tokenized form of the expression
+     */
+    List<String> parseExpression(String expr) {
+        // Format the expression to be "mathematical"
+        expr = expr
+                .replaceAll("\\s+", "")
+                .replace("[", "(")
+                .replace("]", ")")
+                .replace("+-", "-")
+                .replace("-+", "-")
+                .replace("--", "+")
+                .replace(")(", ")*(");
+
+        if(expr.startsWith("-(")) {
+            expr = "0" + expr;
+        }
+
+        // Keep track of the no. of operators, operands, (, and )
+        int numOperators = 0, numOperands = 0, numOpenParen = 0, numClosedParen = 0;
+        
+        // Build the tokens from the expression
+        List<String> tokens = new ArrayList<>();
+        int i = 0;
+        while(i < expr.length()) {
+            char curr = expr.charAt(i);
+            
+            if(isOperator(curr)) {
+                numOperators++;
+                tokens.add(String.valueOf(curr));
+            } else if(curr == '(') {
+                numOpenParen++;
+                if(!tokens.isEmpty() && isOperand(tokens.get(tokens.size() - 1))) {
+                    numOperators++;
+                    tokens.add("*");
+                }
+                tokens.add(String.valueOf(curr));
+            } else if(curr == ')') {
+                numClosedParen++;
+                tokens.add(String.valueOf(curr));
+            } else {
+                numOperands++;
+                StringBuilder currOperand = new StringBuilder();
+                currOperand.append(curr);
+
+                while(i + 1 < expr.length() && !isOperator(expr.charAt(i + 1)) && expr.charAt(i + 1) != '(' && expr.charAt(i + 1) != ')') {
+                    currOperand.append(expr.charAt(i + 1));
+                    i++;
+                }
+
+                // Handle negative numbers
+                if(tokens.size() == 1 && tokens.get(0).equals("-")) {
+                    numOperators--;
+                    tokens.set(0, "-"+currOperand);
+                } else if(tokens.size() >= 2 && (isOperator(tokens.get(tokens.size() - 2).charAt(0)) || tokens.get(tokens.size() - 2).equals("(")) && tokens.get(tokens.size() - 1).equals("-")) {
+                    numOperators--;
+                    tokens.set(tokens.size() - 1, "-"+currOperand);
+                } else {
+                    // Handles expression matching A(B) or (A)B
+                    if(!tokens.isEmpty() && tokens.get(tokens.size() - 1).equals(")")) {
+                        tokens.add("*");
+                        numOperators++;
+                    }
+                    tokens.add(currOperand.toString());
+                }
+            }
+
+            i++;
+        }
+
+        if(numOperators == 0) {
+            System.err.println("No arithmetic operators detected!");
+            System.exit(-1);
+        } 
+
+        if(numOperators >= numOperands) {
+            System.err.println("Operator count >= Operand count!");
+            System.exit(-1);
+        }
+        
+        if(numOpenParen != numClosedParen) {
+            System.err.println("Unbalanced expression!");
+            System.exit(-1);
+        }
+
+        return tokens;
     }
 }

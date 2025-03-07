@@ -30,7 +30,7 @@ public class Client {
         try {
             // Establish a socket connection to the server
             s = new Socket(address, port); 
-            System.out.println("Connected");
+            System.out.printf("Connected to %d\n", port);
 
             // Set up the input and output streams
             in = new BufferedReader(new InputStreamReader(System.in)); // Client-side input
@@ -46,11 +46,19 @@ public class Client {
             return;
         }
 
+        login();
+
         // Send the equation to the server
         writeToServer(); 
 
         // Disconnect the client from the server
         close();
+    }
+
+    void login() throws IOException {
+        System.out.print("Enter your name: ");
+        String name = in.readLine();
+        out.writeUTF(name);
     }
 
     /**
@@ -68,6 +76,12 @@ public class Client {
             // Send equation to the server
             System.out.print("Enter equation: ");
             line = in.readLine();
+
+            if(line.equals(Server.STOP)) {
+                out.writeUTF(line);
+                return;
+            }
+
             out.writeUTF(line);
 
             // Wait for the server's response and print it
@@ -85,12 +99,18 @@ public class Client {
      * @throws IOException Client failed to close
      */
     void close() throws IOException {
+        System.out.println("CLOSE");
         in.close(); // Close the input stream for client-side
         out.close(); // Close the output strem for sending data to the server
         serverIn.close(); // Close thee input stream for receiving data from the server
         s.close(); // Close the socket connection to the server
     }
 
+    /**
+     * getIPAddress
+     * 
+     * @return Get the local IP address of the client
+     */
     static String getIPAddress() {
         try {
             InetAddress inet = InetAddress.getLocalHost();

@@ -1,5 +1,8 @@
 import java.net.*;
+import java.util.*;
 import java.io.*;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
 
 /**
  * Server.java
@@ -20,6 +23,8 @@ public class Server {
     public static final int PORT = 5000; // Port number to connect to
     public static final String STOP = "#"; // Stopping string
 
+    List<ConnectedClient> clients; // List of connected clients
+
     /**
      * Server(int port)
      * 
@@ -29,6 +34,7 @@ public class Server {
      * @param port The port number the server will listen on
      */
     public Server(int port) {
+        clients = new ArrayList<ConnectedClient>();
         index = 0; // Initialize the current client connection index
 
         // Run the server and wait for a client to connect
@@ -43,6 +49,8 @@ public class Server {
             // Handle incoming client connections
             while(true) 
                 initConnection();
+
+            
         } catch(IOException i) {
             System.err.println(i);
             return;
@@ -64,18 +72,39 @@ public class Server {
         
         // End function if client could not be connected successfully
         if(!clientSocket.isConnected()) return;
+
+        DataInputStream dis = new DataInputStream(clientSocket.getInputStream());
+
+        String clientName = dis.readUTF();
+        if(clientName.trim().isEmpty()) {
+            System.err.println("Client name cannot be emptty");
+            clientSocket.close();
+            return;
+        }
         
         // Create a new thread to handle client communication
         new Thread(() -> {
             // Create an instance of ConnectedClient for this specific client
-            ConnectedClient client = new ConnectedClient(clientSocket, ++index);
+            ConnectedClient client = new ConnectedClient(clientSocket, ++index, clientName);
+            clients.add(client);
             
             // Process client's input and send the result
             handleClientRequest(client);
 
             // Close the client connection
             client.close();
+
+            synchronized(Server.class) {
+                try {
+                    logClient();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            
         }).start(); // Start the new thread for the client
+
+        
     }
 
     /**
@@ -90,11 +119,79 @@ public class Server {
     void handleClientRequest(ConnectedClient client) {
         String eq;
         double res;
-
         while(!(eq = client.read()).equals(STOP)) {
-            System.out.printf("Client %d is asking for: %s\n", client.getId(), eq);
+            System.out.printf("Client [%s]-%d is asking for: %s\n", client.getName(), client.getId(), eq);
             res = evaluateExpression(eq);
-            client.sendRespone(res);
+            client.sendResponse(res);
+            client.logRequest(eq, res);
+        }
+
+        client.setDisconnectTime(LocalDateTime.now());
+        
+    }
+
+    /**
+     * logClient()
+     * 
+     * Write a log of connected clients and their requests
+     * to a log file.
+     * 
+     * @throws IOException Server failed to log the client
+     */
+    void logClient() throws IOException {
+        // Create a /Log directory if it does not exists
+        String dirName = "Log";
+        String currDir = System.getProperty("user.dir");
+        String dirPath = currDir + File.separator + dirName;
+        File dir = new File(dirPath);
+
+        if(!dir.exists()) 
+            dir.mkdir();
+
+
+        // Create the log file
+        String fName = String.format(
+            "log_%s.txt", 
+            LocalDateTime.now().format(
+                DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss")
+            )
+        );
+        File f = new File(dirPath + File.separator + fName);
+
+        DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-d HH:mm:ss");
+        
+        // Log every connected client to the file
+        try(FileWriter fw = new FileWriter(f)) {
+            BufferedWriter bw = new BufferedWriter(fw);
+            PrintWriter pw = new PrintWriter(bw);
+
+            for(ConnectedClient client : clients) {
+                Duration session = Duration.between(client.getStartTime(), LocalDateTime.now());
+                long minutes = session.toMinutes();
+                long seconds = session.getSeconds() % 60;
+
+                String startTime = client.getStartTime().format(df);
+
+                String disconnectTime = client.getDisconnectTime() != null ?
+                    client.getDisconnectTime().format(df) :
+                    "Still Connected";
+
+                pw.println("==========================================================");
+                pw.printf("Client ID: %d\n", client.getId());
+                pw.printf("Connected At: %s\n", startTime);
+                pw.printf("Session Duration: %d min %d sec\n", minutes, seconds);
+                pw.println("Requests:");
+                for(String log : client.getRequestLog()) {
+                    pw.printf("\t%s\n", log);
+                }
+                pw.printf("Disconnected at: %s\n", disconnectTime);
+                pw.println("==========================================================");
+            }
+
+            pw.flush();
+        } catch(IOException i) {
+            System.err.println(i);
+            return;
         }
     }
 
