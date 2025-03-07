@@ -91,7 +91,18 @@ public class Client {
         s.close(); // Close the socket connection to the server
     }
 
+    static String getIPAddress() {
+        try {
+            InetAddress inet = InetAddress.getLocalHost();
+            return inet.getHostAddress();
+        } catch(UnknownHostException u) {
+            System.err.println(u);
+            return "127.0.0.1";
+        }
+    }
+
     public static void main(String[] args) throws IOException {
-        new Client("127.0.0.1", Server.PORT);
+        String ip = getIPAddress();
+        new Client(ip, Server.PORT);
     }
 }
