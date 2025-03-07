@@ -14,6 +14,7 @@ public class Client {
     BufferedReader in; // Input reader for terminal input
     DataOutputStream out; // Output stream to send to the server
     DataInputStream serverIn; // Input stream to receive from the server
+    String user; // The user trying to connect to the server
 
     /**
      * Client(String address, int port)
@@ -25,7 +26,7 @@ public class Client {
      * @param port The port number
      * @throws IOException Client failed to connect to the server
      */
-    public Client(String address, int port) throws IOException {
+    public Client(String address, int port, String name) throws IOException {
         // Attempt to establish a connection
         try {
             // Establish a socket connection to the server
@@ -46,19 +47,14 @@ public class Client {
             return;
         }
 
-        login();
+        // Send the client name to the server
+        out.writeUTF(name);
 
         // Send the equation to the server
         writeToServer(); 
 
         // Disconnect the client from the server
         close();
-    }
-
-    void login() throws IOException {
-        System.out.print("Enter your name: ");
-        String name = in.readLine();
-        out.writeUTF(name);
     }
 
     /**
@@ -122,12 +118,13 @@ public class Client {
     }
 
     public static void main(String[] args) throws IOException {
-        if(args.length != 1) {
-            System.err.println("java Client <IP Address>");
+        if(args.length != 2) {
+            System.err.println("java Client <IP Address> <Name>");
             System.exit(-1);
         }
 
         String ip = args[0];
-        new Client(ip, Server.PORT);
+        String name = args[1];
+        new Client(ip, Server.PORT, name);
     }
 }
