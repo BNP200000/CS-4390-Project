@@ -40,7 +40,7 @@ public class Server {
         // Run the server and wait for a client to connect
         try {
             // Set up the server on the specified port
-            serverSocket = new ServerSocket(port);
+            serverSocket = new ServerSocket(port, 50, InetAddress.getByName("0.0.0.0"));
             System.out.printf("Server started on port %d\n", port);
             
             // Indicate that the server is waiting for a client connection
@@ -87,7 +87,7 @@ public class Server {
             // Create an instance of ConnectedClient for this specific client
             ConnectedClient client = new ConnectedClient(clientSocket, ++index, clientName);
             clients.add(client);
-            
+
             // Process client's input and send the result
             handleClientRequest(client);
 
@@ -177,7 +177,7 @@ public class Server {
                     "Still Connected";
 
                 pw.println("==========================================================");
-                pw.printf("Client ID: %d\n", client.getId());
+                pw.printf("Client: [%s]-%d\n", client.getName(), client.getId());
                 pw.printf("Connected At: %s\n", startTime);
                 pw.printf("Session Duration: %d min %d sec\n", minutes, seconds);
                 pw.println("Requests:");

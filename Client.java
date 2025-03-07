@@ -122,7 +122,12 @@ public class Client {
     }
 
     public static void main(String[] args) throws IOException {
-        String ip = getIPAddress();
+        if(args.length != 1) {
+            System.err.println("java Client <IP Address>");
+            System.exit(-1);
+        }
+
+        String ip = args[0];
         new Client(ip, Server.PORT);
     }
 }
