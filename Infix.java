@@ -29,7 +29,6 @@ public class Infix {
      */
     double evaluate(String expr) {
         List<String> tokens = parseExpression(expr);
-
         for(String token : tokens) {
             if(isOperand(token)) {
                 operand.push(Double.parseDouble(token));
@@ -109,22 +108,22 @@ public class Infix {
 
         switch(op) { 
             case '+':
-                res = (double)Math.round((a + b) * 10) / 10;
+                res = a + b;
                 break;
             case '-':
-                res = (double)Math.round((b - a) * 10) / 10;
+                res = b - a;
                 break;
             case '*':
-                res = (double)Math.round((a * b) * 10) / 10;
+                res = a * b;
                 break;
             case '/':
                 if(a == 0) {
                     throw new ArithmeticException("Cannot divide by 0!");
                 }
-                res = (double)Math.round((b / a) * 10) / 10;
+                res = b / a;
                 break;
             case '^':
-                res = (double)Math.round(Math.pow(b, a) * 10) / 10;
+                res = Math.pow(b, a);
                 break;
         }
         operand.push(res);
@@ -145,6 +144,8 @@ public class Infix {
                 .replace("+-", "-")
                 .replace("-+", "-")
                 .replace("--", "+")
+                .replace("**", "^")
+                .replace("//", "/")
                 .replace(")(", ")*(");
 
         if(expr.startsWith("-(")) {
