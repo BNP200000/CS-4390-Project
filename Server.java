@@ -52,7 +52,7 @@ public class Server {
 
             
         } catch(IOException i) {
-            System.err.println(i);
+            System.err.println("Failed to start server: " + i);
             return;
         }
     }
@@ -74,7 +74,6 @@ public class Server {
         if(!clientSocket.isConnected()) return;
 
         DataInputStream dis = new DataInputStream(clientSocket.getInputStream());
-
         String clientName = dis.readUTF();
         if(clientName.trim().isEmpty()) {
             System.err.println("Client name cannot be emptty");
@@ -98,7 +97,7 @@ public class Server {
                 try {
                     logClient();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    System.out.println("Failed to log client: " + e);
                 }
             }
             
@@ -190,7 +189,7 @@ public class Server {
 
             pw.flush();
         } catch(IOException i) {
-            System.err.println(i);
+            System.err.println("Failed to write file: " + i);
             return;
         }
     }
@@ -207,7 +206,7 @@ public class Server {
         Infix in = new Infix();
         return in.evaluate(expr);
     }
-
+    
     public static void main(String[] args) {
         new Server(PORT);
     }

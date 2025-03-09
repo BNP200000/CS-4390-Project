@@ -37,13 +37,14 @@ public class Client {
             in = new BufferedReader(new InputStreamReader(System.in)); // Client-side input
             out = new DataOutputStream(s.getOutputStream()); // Sending data to the server
             serverIn = new DataInputStream(s.getInputStream()); // Reading server responses
+
         } catch(UnknownHostException u) {
             // Print error if host is unknown
-            System.err.println(u); 
+            System.err.println("Failed to connect to host: " + u); 
             return;
         } catch(IOException i) {
             // Print error if an IO issue occurs
-            System.err.println(i);
+            System.err.println("Failed to connect I/O streams: " + i);
             return;
         }
 
@@ -75,9 +76,10 @@ public class Client {
 
             if(line.equals(Server.STOP)) {
                 out.writeUTF(line);
-                return;
+                break;
             }
-
+            
+            // Write the message to the server
             out.writeUTF(line);
 
             // Wait for the server's response and print it
