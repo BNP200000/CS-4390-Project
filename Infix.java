@@ -8,8 +8,8 @@ import java.util.*;
  * algorithm.
  */
 public class Infix {
-    static Stack<Double> operand; // Stack of operands
-    static Stack<Character> operator; // Stack of operators
+    Stack<Double> operand; // Stack of operands
+    Stack<Character> operator; // Stack of operators
 
     /**
      * Infix()
