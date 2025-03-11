@@ -21,7 +21,6 @@ public class Server {
     int index; // Keeps track of the client connection index
 
     public static final int PORT = 5000; // Port number to connect to
-    public static final String STOP = "#"; // Stopping string
 
     List<ConnectedClient> clients; // List of connected clients
 
@@ -118,7 +117,7 @@ public class Server {
     void handleClientRequest(ConnectedClient client) {
         String eq;
         double res;
-        while(!(eq = client.read()).equals(STOP)) {
+        while(!(eq = client.read()).equals("#")) {
             System.out.printf("Client [%s]-%d is asking for: %s\n", client.getName(), client.getId(), eq);
             res = evaluateExpression(eq);
             client.sendResponse(res);
@@ -146,7 +145,6 @@ public class Server {
 
         if(!dir.exists()) 
             dir.mkdir();
-
 
         // Create the log file
         String fName = String.format(

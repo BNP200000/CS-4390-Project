@@ -26,6 +26,10 @@ public class Client {
      * @param port The port number
      * @throws IOException Client failed to connect to the server
      */
+    public Client(String address, String name) throws IOException {
+        this(address, 5000, name);
+    }
+
     public Client(String address, int port, String name) throws IOException {
         // Attempt to establish a connection
         try {
@@ -69,12 +73,12 @@ public class Client {
     void writeToServer() throws IOException {
         String line = "";
 
-        while(!line.equals(Server.STOP)) {
+        while(!line.equals("#")) {
             // Send equation to the server
             System.out.print("Enter equation: ");
             line = in.readLine();
 
-            if(line.equals(Server.STOP)) {
+            if(line.equals("#")) {
                 out.writeUTF(line);
                 break;
             }
@@ -127,6 +131,6 @@ public class Client {
 
         String ip = args[0];
         String name = args[1];
-        new Client(ip, Server.PORT, name);
+        new Client(ip, name);       
     }
 }

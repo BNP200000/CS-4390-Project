@@ -10,6 +10,7 @@ import java.util.*;
 public class Infix {
     Stack<Double> operand; // Stack of operands
     Stack<Character> operator; // Stack of operators
+    private boolean errorExpr; // Checks if the equation is parsed correctly
 
     /**
      * Infix()
@@ -17,6 +18,7 @@ public class Infix {
      * Constructor for the Infix class
      */
     public Infix() {
+        errorExpr = false;
         operand = new Stack<Double>();
         operator = new Stack<Character>();
     }
@@ -29,6 +31,7 @@ public class Infix {
      */
     double evaluate(String expr) {
         List<String> tokens = parseExpression(expr);
+
         for(String token : tokens) {
             if(isOperand(token)) {
                 operand.push(Double.parseDouble(token));
@@ -61,7 +64,7 @@ public class Infix {
      * @return True if c is a mathematical operator; otherwise, False
      */
     boolean isOperator(char c) {
-        return c == '*' || c == '/' || c == '+' || c == '-' || c == '^';
+        return c == '*' || c == '/' || c == '+' || c == '-'  || c == '%' || c == '^';
     }
 
     /**
@@ -85,7 +88,7 @@ public class Infix {
 
         if(c == '^') {
             prec = 3;
-        } else if(c == '*' || c == '/') {
+        } else if(c == '*' || c == '/' || c == '%') {
             prec = 2;
         } else if(c == '+' || c == '-') {
             prec = 1;
@@ -121,6 +124,12 @@ public class Infix {
                     throw new ArithmeticException("Cannot divide by 0!");
                 }
                 res = b / a;
+                break;
+            case '%':
+                if(a == 0) {
+                    throw new ArithmeticException("Cannot divide by 0!");
+                }
+                res = b % a;
                 break;
             case '^':
                 res = Math.pow(b, a);
@@ -206,19 +215,20 @@ public class Infix {
 
         if(numOperators == 0) {
             System.err.println("No arithmetic operators detected!");
-            System.exit(-1);
         } 
 
         if(numOperators >= numOperands) {
             System.err.println("Operator count >= Operand count!");
-            System.exit(-1);
         }
         
         if(numOpenParen != numClosedParen) {
             System.err.println("Unbalanced expression!");
-            System.exit(-1);
         }
 
         return tokens;
+    }
+
+    public boolean getCheck() {
+        return errorExpr;
     }
 }
