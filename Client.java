@@ -75,7 +75,7 @@ public class Client {
 
         while(!line.equals("#")) {
             // Send equation to the server
-            System.out.print("Enter equation: ");
+            System.out.print("Enter equation (# to close): ");
             line = in.readLine();
 
             if(line.equals("#")) {
