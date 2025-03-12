@@ -88,6 +88,12 @@ public class Client {
 
             // Wait for the server's response and print it
             String response = serverIn.readUTF();
+            
+            // If server receives a maligned input from client, simply
+            // output an error message
+            if(response.equals(String.valueOf(Double.NaN)))
+                response = "Error parsing expression";
+                
             System.out.printf("Server response: %s\n", response);
         }  
     }

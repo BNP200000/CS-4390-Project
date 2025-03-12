@@ -10,7 +10,7 @@ import java.util.*;
 public class Infix {
     Stack<Double> operand; // Stack of operands
     Stack<Character> operator; // Stack of operators
-    private boolean errorExpr; // Checks if the equation is parsed correctly
+    int bitCheck; // Checks if the equation is parsed correctly
 
     /**
      * Infix()
@@ -18,7 +18,7 @@ public class Infix {
      * Constructor for the Infix class
      */
     public Infix() {
-        errorExpr = false;
+        bitCheck = 1;
         operand = new Stack<Double>();
         operator = new Stack<Character>();
     }
@@ -31,6 +31,10 @@ public class Infix {
      */
     double evaluate(String expr) {
         List<String> tokens = parseExpression(expr);
+
+        if(bitCheck == 0) {
+            return Double.NaN;
+        }
 
         for(String token : tokens) {
             if(isOperand(token)) {
@@ -147,6 +151,7 @@ public class Infix {
     List<String> parseExpression(String expr) {
         // Format the expression to be "mathematical"
         expr = expr
+                .replaceAll("\\b0+(\\d)", "$1")
                 .replaceAll("\\s+", "")
                 .replace("[", "(")
                 .replace("]", ")")
@@ -215,20 +220,19 @@ public class Infix {
 
         if(numOperators == 0) {
             System.err.println("No arithmetic operators detected!");
+            bitCheck = 0;
         } 
 
         if(numOperators >= numOperands) {
             System.err.println("Operator count >= Operand count!");
+            bitCheck = 0;
         }
         
         if(numOpenParen != numClosedParen) {
             System.err.println("Unbalanced expression!");
+            bitCheck = 0;
         }
 
         return tokens;
-    }
-
-    public boolean getCheck() {
-        return errorExpr;
     }
 }

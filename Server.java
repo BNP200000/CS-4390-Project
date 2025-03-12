@@ -202,7 +202,8 @@ public class Server {
      */
     double evaluateExpression(String expr) {
         Infix in = new Infix();
-        return in.evaluate(expr);
+        double value = in.evaluate(expr);
+        return value;
     }
     
     public static void main(String[] args) {
