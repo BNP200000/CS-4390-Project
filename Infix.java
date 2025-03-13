@@ -197,6 +197,13 @@ public class Infix {
                     currOperand.append(expr.charAt(i + 1));
                     i++;
                 }
+                
+                // Handle error when a non-digit is detected
+                if(!Character.isDigit(currOperand.charAt(0))) {
+                    System.err.println("Non-numerical value detected!");
+                    numOperands = 0;
+                    break;
+                } 
 
                 // Handle negative numbers
                 if(tokens.size() == 1 && tokens.get(0).equals("-")) {
@@ -213,13 +220,20 @@ public class Infix {
                     }
                     tokens.add(currOperand.toString());
                 }
+
+                
             }
 
             i++;
         }
 
+        if(numOperands == 0) {
+            System.err.println("No operand detected!");
+            bitCheck = 0;
+        } 
+
         if(numOperators == 0) {
-            System.err.println("No arithmetic operators detected!");
+            System.err.println("No arithmetic operator detected!");
             bitCheck = 0;
         } 
 
