@@ -73,7 +73,7 @@ public class Client {
     void writeToServer() throws IOException {
         String line = "";
 
-        while(!line.equals("#")) {
+        while(true) {
             // Send equation to the server
             System.out.print("Enter equation (# to close): ");
             line = in.readLine();

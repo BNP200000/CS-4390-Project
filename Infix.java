@@ -150,8 +150,7 @@ public class Infix {
      */
     List<String> parseExpression(String expr) {
         // Format the expression to be "mathematical"
-        expr = expr
-                .replaceAll("\\b0+(\\d)", "$1")
+        expr =  expr
                 .replaceAll("\\s+", "")
                 .replace("[", "(")
                 .replace("]", ")")
@@ -160,7 +159,8 @@ public class Infix {
                 .replace("--", "+")
                 .replace("**", "^")
                 .replace("//", "/")
-                .replace(")(", ")*(");
+                .replace(")(", ")*(")
+                .trim();
 
         if(expr.startsWith("-(")) {
             expr = "0" + expr;
@@ -197,7 +197,7 @@ public class Infix {
                     currOperand.append(expr.charAt(i + 1));
                     i++;
                 }
-                
+
                 // Handle error when a non-digit is detected
                 if(!Character.isDigit(currOperand.charAt(0))) {
                     System.err.println("Non-numerical value detected!");
@@ -220,8 +220,6 @@ public class Infix {
                     }
                     tokens.add(currOperand.toString());
                 }
-
-                
             }
 
             i++;
