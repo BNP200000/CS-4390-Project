@@ -105,7 +105,7 @@ public class Infix {
      * operate()
      * 
      * Perform math operation on the two most recent
-     * item in the operand stack
+     * items in the operand stack
      */
     void operate() {
         double res = -1;
@@ -200,7 +200,7 @@ public class Infix {
 
                 // Handle error when a non-digit is detected
                 if(!Character.isDigit(currOperand.charAt(0))) {
-                    System.err.println("Non-numerical value detected!");
+                    System.err.println("Invalid character detected in the expression!");
                     numOperands = 0;
                     break;
                 } 
@@ -231,7 +231,7 @@ public class Infix {
         } 
 
         if(numOperators == 0) {
-            System.err.println("No arithmetic operator detected!");
+            System.err.println("No valid arithmetic operator detected!");
             bitCheck = 0;
         } 
 
