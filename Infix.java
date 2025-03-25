@@ -199,26 +199,29 @@ public class Infix {
                 }
                 
                 // Handle error when a non-digit is detected
-                if(!Character.isDigit(currOperand.charAt(0))) {
+                double val = 0;
+                try {
+                    val = Double.parseDouble(currOperand.toString());
+                } catch (NumberFormatException nfe) {
                     System.err.println("Non-numerical value detected!");
                     numOperands = 0;
                     break;
-                } 
+                }
 
                 // Handle negative numbers
                 if(tokens.size() == 1 && tokens.get(0).equals("-")) {
                     numOperators--;
-                    tokens.set(0, "-"+currOperand);
+                    tokens.set(0, "-"+val);
                 } else if(tokens.size() >= 2 && (isOperator(tokens.get(tokens.size() - 2).charAt(0)) || tokens.get(tokens.size() - 2).equals("(")) && tokens.get(tokens.size() - 1).equals("-")) {
                     numOperators--;
-                    tokens.set(tokens.size() - 1, "-"+currOperand);
+                    tokens.set(tokens.size() - 1, "-"+val);
                 } else {
                     // Handles expression matching A(B) or (A)B
                     if(!tokens.isEmpty() && tokens.get(tokens.size() - 1).equals(")")) {
                         tokens.add("*");
                         numOperators++;
                     }
-                    tokens.add(currOperand.toString());
+                    tokens.add(""+val);
                 }
 
                 
