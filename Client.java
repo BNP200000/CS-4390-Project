@@ -73,7 +73,7 @@ public class Client {
     void writeToServer() throws IOException {
         String line = "";
 
-        while(!line.equals("#")) {
+        while(true) {
             // Send equation to the server
             System.out.print("Enter equation (# to close): ");
             line = in.readLine();
@@ -109,8 +109,8 @@ public class Client {
     void close() throws IOException {
         System.out.println("CLOSE");
         in.close(); // Close the input stream for client-side
-        out.close(); // Close the output strem for sending data to the server
-        serverIn.close(); // Close thee input stream for receiving data from the server
+        out.close(); // Close the output stream for sending data to the server
+        serverIn.close(); // Close the input stream for receiving data from the server
         s.close(); // Close the socket connection to the server
     }
 

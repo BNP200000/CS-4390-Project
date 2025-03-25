@@ -105,7 +105,7 @@ public class Infix {
      * operate()
      * 
      * Perform math operation on the two most recent
-     * item in the operand stack
+     * items in the operand stack
      */
     void operate() {
         double res = -1;
@@ -150,8 +150,7 @@ public class Infix {
      */
     List<String> parseExpression(String expr) {
         // Format the expression to be "mathematical"
-        expr = expr
-                .replaceAll("\\b0+(\\d)", "$1")
+        expr =  expr
                 .replaceAll("\\s+", "")
                 .replace("[", "(")
                 .replace("]", ")")
@@ -160,7 +159,8 @@ public class Infix {
                 .replace("--", "+")
                 .replace("**", "^")
                 .replace("//", "/")
-                .replace(")(", ")*(");
+                .replace(")(", ")*(")
+                .trim();
 
         if(expr.startsWith("-(")) {
             expr = "0" + expr;
@@ -197,7 +197,7 @@ public class Infix {
                     currOperand.append(expr.charAt(i + 1));
                     i++;
                 }
-                
+
                 // Handle error when a non-digit is detected
                 double val = 0;
                 try {
@@ -223,8 +223,6 @@ public class Infix {
                     }
                     tokens.add(""+val);
                 }
-
-                
             }
 
             i++;
@@ -236,7 +234,7 @@ public class Infix {
         } 
 
         if(numOperators == 0) {
-            System.err.println("No arithmetic operator detected!");
+            System.err.println("No valid arithmetic operator detected!");
             bitCheck = 0;
         } 
 
