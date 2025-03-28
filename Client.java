@@ -109,8 +109,8 @@ public class Client {
     void close() throws IOException {
         System.out.println("CLOSE");
         in.close(); // Close the input stream for client-side
-        out.close(); // Close the output strem for sending data to the server
-        serverIn.close(); // Close thee input stream for receiving data from the server
+        out.close(); // Close the output stream for sending data to the server
+        serverIn.close(); // Close the input stream for receiving data from the server
         s.close(); // Close the socket connection to the server
     }
 
@@ -119,7 +119,7 @@ public class Client {
      * 
      * @return Get the local IP address of the client
      */
-    static String getIPAddress() {
+    static String getLocalAddress() {
         try {
             InetAddress inet = InetAddress.getLocalHost();
             return inet.getHostAddress();
@@ -130,13 +130,12 @@ public class Client {
     }
 
     public static void main(String[] args) throws IOException {
-        if(args.length != 2) {
-            System.err.println("java Client <IP Address> <Name>");
+        if(args.length != 1) {
+            System.err.println("java Client <Name>");
             System.exit(-1);
         }
 
-        String ip = args[0];
-        String name = args[1];
-        new Client(ip, name);       
+        String name = args[0];
+        new Client(getLocalAddress(), name);       
     }
 }

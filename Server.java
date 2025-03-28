@@ -10,7 +10,7 @@ import java.time.format.DateTimeFormatter;
  * A centralized server that any client can connect to, using a TCP
  * connection.
  * 
- * It's primary function is to calculate simple math equations given by
+ * Its primary function is to calculate simple math equations given by
  * the client and deliver the result back to them.
  */
 public class Server {
@@ -69,13 +69,13 @@ public class Server {
         // Accept a new client connection
         Socket clientSocket = serverSocket.accept();
         
-        // End function if client could not be connected successfully
+        // Terminate if client connection fails
         if(!clientSocket.isConnected()) return;
 
         DataInputStream dis = new DataInputStream(clientSocket.getInputStream());
         String clientName = dis.readUTF();
         if(clientName.trim().isEmpty()) {
-            System.err.println("Client name cannot be emptty");
+            System.err.println("Client name cannot be empty");
             clientSocket.close();
             return;
         }
