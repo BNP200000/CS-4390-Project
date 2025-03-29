@@ -20,9 +20,20 @@ public class Server {
     DataOutputStream out; // Output stream for sending data to the client
     int index; // Keeps track of the client connection index
 
-    public static final int PORT = 5000; // Port number to connect to
-
+    //public static final int PORT = 5000; // Port number to connect to
+    Infix calculator;
     List<ConnectedClient> clients; // List of connected clients
+
+    /**
+     * Server(int port)
+     * 
+     * Constructor for the centralized Server class.
+     * Initializes the server to listen for incoming client connections
+     * using default PORT 5000
+     */
+    public Server() {
+        this(5000);
+    }
 
     /**
      * Server(int port)
@@ -35,6 +46,7 @@ public class Server {
     public Server(int port) {
         clients = new ArrayList<ConnectedClient>();
         index = 0; // Initialize the current client connection index
+        calculator = new Infix();
 
         // Run the server and wait for a client to connect
         try {
@@ -100,9 +112,7 @@ public class Server {
                 }
             }
             
-        }).start(); // Start the new thread for the client
-
-        
+        }).start(); // Start the new thread for the client   
     }
 
     /**
@@ -116,12 +126,11 @@ public class Server {
      */
     void handleClientRequest(ConnectedClient client) {
         String eq;
-        double res;
         while(!(eq = client.read()).equals("#")) {
             System.out.printf("Client [%s]-%d is asking for: %s\n", client.getName(), client.getId(), eq);
-            res = evaluateExpression(eq);
-            client.sendResponse(res);
-            client.logRequest(eq, res);
+            double value = calculator.evaluate(eq);
+            client.sendResponse(value);
+            client.logRequest(eq, value);
         }
 
         client.setDisconnectTime(LocalDateTime.now());
@@ -192,21 +201,7 @@ public class Server {
         }
     }
 
-    /**
-     * evaluateExpression(String expr)
-     * 
-     * Evaluates a given mathematical expression
-     * 
-     * @param expr The mathematical expression to be evaluated
-     * @return The result of the evaluation
-     */
-    double evaluateExpression(String expr) {
-        Infix in = new Infix();
-        double value = in.evaluate(expr);
-        return value;
-    }
-    
     public static void main(String[] args) {
-        new Server(PORT);
+        new Server();
     }
 }

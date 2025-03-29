@@ -17,19 +17,31 @@ public class Client {
     String user; // The user trying to connect to the server
 
     /**
-     * Client(String address, int port)
+     * Client(String address, String name)
      * 
      * Constructor for the Client class.
-     * Initializes the client to send messages to the central server.
+     * Initializes the client to send messages to the central server
+     * using default PORT 5000.
      * 
      * @param address The IP address
-     * @param port The port number
+     * @param name The client name 
      * @throws IOException Client failed to connect to the server
      */
     public Client(String address, String name) throws IOException {
         this(address, 5000, name);
     }
 
+    /**
+     * Client(String address, int port, String name)
+     * 
+     * Constructor for the Client class.
+     * Initializes the client to send messages to the central server.
+     * 
+     * @param address The IP address
+     * @param port The port number
+     * @param name The client name 
+     * @throws IOException Client failed to connect to the server
+     */
     public Client(String address, int port, String name) throws IOException {
         // Attempt to establish a connection
         try {
@@ -119,7 +131,7 @@ public class Client {
      * 
      * @return Get the local IP address of the client
      */
-    static String getLocalAddress() {
+    static String getIPAddress() {
         try {
             InetAddress inet = InetAddress.getLocalHost();
             return inet.getHostAddress();
@@ -136,6 +148,8 @@ public class Client {
         }
 
         String name = args[0];
-        new Client(getLocalAddress(), name);       
+        String address = getIPAddress();
+        System.out.println(address);
+        new Client(address, name);       
     }
 }
