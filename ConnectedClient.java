@@ -9,7 +9,7 @@ import java.io.*;
  * Represents a client connected to the server. It basically
  * functions as the middleware between the client and server.
  * 
- * Responsible for handiling client interaction, such as:
+ * Responsible for handling client interaction, such as:
  * - Receiving mathematical expressions,
  * - Calculating the result,
  * - Sending the result back to the client
@@ -76,7 +76,7 @@ public class ConnectedClient {
     /**
      * sendResponse()
      * 
-     * Sends the result of the evaluation bacck to the client
+     * Sends the result of the evaluation back to the client
      * 
      * @param result The result to send back to the client
      */
@@ -92,7 +92,7 @@ public class ConnectedClient {
     /**
      * close()
      * 
-     * Closes the client's socket and input stream.
+     * Closes the client's socket and I/O streams.
      * 
      * Called when the client disconnects or the
      * server is done interacting with the client.
@@ -102,6 +102,7 @@ public class ConnectedClient {
             System.out.printf("Client [%s]-%d has disconnected\n", name, id);
             clientSocket.close();
             in.close();
+            out.close();
         } catch(IOException i) {
             System.err.println(i);
             return;

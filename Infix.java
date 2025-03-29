@@ -216,7 +216,7 @@ public class Infix {
                     numOperators--;
                     tokens.set(tokens.size() - 1, "-"+val);
                 } else {
-                    // Handles expression matching A(B) or (A)B
+                    // Handles expression matching (A)B
                     if(!tokens.isEmpty() && tokens.get(tokens.size() - 1).equals(")")) {
                         tokens.add("*");
                         numOperators++;
