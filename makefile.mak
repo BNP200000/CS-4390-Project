@@ -1,13 +1,11 @@
 JFLAGS = -g
 JC = javac
-.SUFFIXES: .java .class
-.java.class:
-        $(JC) $(JFLAGS) $*.java
 
-# This uses the line continuation character (\) for readability
-# You can list these all on a single line, separated by a space instead.
-# If your version of make can't handle the leading tabs on each
-# line, just remove them (these are also just added for readability).
+.SUFFIXES: .java .class
+
+.java.class:
+	$(JC) $(JFLAGS) $<
+
 CLASSES = \
         Server.java \
         Client.java \
@@ -18,5 +16,14 @@ default: classes
 
 classes: $(CLASSES:.java=.class)
 
+run-server: Server.class
+	java Server
+
+run-client: Client.class
+ifndef NAME
+	$(error NAME is not set. Usage: make run-client NAME=YourName)
+endif
+	java Client $(NAME)
+
 clean:
-        $(RM) *.class
+	rm -f *.class
