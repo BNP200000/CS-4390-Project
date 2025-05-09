@@ -22,7 +22,7 @@ In another terminal: 'java Client <Name>'
 
 * Run the makefile using 'make'. You will need to install GNU make if you are on a Windows platform
 * In one terminal: 'make run-server'
-* In another terminal: 'make run-client NAME=<Name>'
+* In another terminal: 'make run-client NAME=&lt;Name&gt;'
 * To remove the class files: run 'make clean'
 
 ## License
